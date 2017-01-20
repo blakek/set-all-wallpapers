@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+##
+# Description: Sets macOS desktop background for all spaces
+# Date: 2017-01-20
+# Written by:
+#   Blake Knight <oss.ideas@gmail.com> (http://blakek.me/)
+##
+
+userDataDB="${HOME}/Library/Application Support/Dock/desktoppicture.db"
+
+showUsage() {
+	cat <<-END
+	Usage: update-all-wallpapers /path/to/image
+	Sets macOS desktop background to the given image for all spaces
+END
+}
+
+main() {
+	if [[ "$#" -eq 0 || "${1}" == '-h' || "${1}" == '--help' ]]; then
+		showUsage
+		exit
+	fi
+
+	local imagePath="$1"
+
+	if [[ -s "${imagePath}" ]]; then
+		sqlite3 "${userDataDB}" "UPDATE data SET value = '${imagePath}'"
+		killall Dock
+	else
+		echo "Error: cannot set background to file '${imagePath}'"
+	fi
+}
+
+main "$@"
