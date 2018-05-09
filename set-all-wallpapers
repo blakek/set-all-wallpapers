@@ -23,7 +23,8 @@ main() {
 		exit
 	fi
 
-	local imagePath="$1"
+	# The absolute path is more reliable
+	local imagePath="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 
 	if [[ -s "${imagePath}" ]]; then
 		sqlite3 "${userDataDB}" "UPDATE data SET value = '${imagePath}'"
